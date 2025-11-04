@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 등록</title>
+</head>
+<body>
+<h1>상품 등록</h1>
+
+<form th:action="@{/admin/products/new}" th:object="${form}" method="post" enctype="multipart/form-data">
+    <div>
+        <label>상품명</label>
+        <input th:field="*{name}" placehoder="상품명">
+        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+    </div>
+
+    <div>
+        <label>가격</label>
+        <input th:field="*{price}" type="number" min="0">
+        <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+    </div>
+
+    <div>
+        <label>재고</label>
+        <input th:field="*{stock}" type="number" min="0">
+        <div th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></div>
+    </div>
+
+    <div>
+        <label>카테고리</label>
+        <select th:field="*{categoryId}">
+            <option value="">-- 선택 --</option>
+            <option value="1">상의</option>
+            <option value="2">하의</option>
+            <option value="3">신발</option>
+        </select>
+    </div>
+
+    <div>
+        <label>설명</label>
+        <textarea th:field="*{description}" rows="4"></textarea>
+    </div>
+
+    <div>
+        <label>대표 이미지</label>
+        <input type="file" name="image">
+    </div>
+
+    <button type="submit">등록</button>
+</form>
+
+<p><a th:href="@{/}">목록으로</a></p>
+
+</body>
+</html>

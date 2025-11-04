@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/schema/mybatis-3-mapper.dtd">
+<!-- (0) namespace는 자바 인터페이스인 ProductMapper와 연결시키는 키 -->
+<mapper namespace="com.example.shoppingmall.mapper.ProductMapper">
+
+    <!-- (1) 자바의 Product 객체와 DB 칼럼을 연결
+          resultMap을 통해 DB 컬럼 이름과 자바 필드 이름을 직접 매핑-->
+    <resultMap id="ProductMap" type="com.example.shoppingmall.domain.product.Product">
+        <id property="id" column="id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="stock" column="stock"/>
+        <result property="description" column="description"/>
+        <result property="mainImage" column="main_image"/>
+    </resultMap>
+
+    <!-- (2) SQL 정의 -->
+    <select id="findById" parameterType="long" resultMap="ProductMap">
+        select * from products where id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="ProductMap">
+        select * from products order by id desc
+    </select>
+
+    <select id="findBycondPaged"
+            parameterType="map"
+            resultMap="ProductMap">
+        select * from products
+        <where>
+            <!-- 키워드 검색-->
+            <if test="cond.keyword != null and cond.keyword != ''">
+                AND (name LIKE CONCAT ('%', #{cond.keyword}, '%')
+                OR description LIKE CONCAT ('%', #{cond.keyword}, '%'))
+            </if>
+
+            <if test="cond.categoryId != null">
+                AND category_id = #{cond.categoryId}
+            </if>
+        </where>
+
+        <choose>
+            <when test="cond.sort == 'priceAsc'">
+                order by price asc
+            </when>
+            <when test="cond.sort == 'priceDesc'">
+                order by price desc
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+
+        limit #{size} offset #{offset}
+    </select>
+    
+    <insert id="insert" parameterType="com.example.shoppingmall.domain.product.Product" useGeneratedKeys="true" keyProperty="id">
+        insert into products
+        (category_id, name, price, stock, description, main_image)
+        values
+        (#{categoryId}, #{name}, #{price}, #{stock}, #{description}, #{mainImage})
+    </insert>
+
+    <update id="update" parameterType="com.example.shoppingmall.domain.product.Product" useGeneratedKeys="true" keyProperty="id">
+        update products
+        set
+            category_id = #{categoryId},
+            name = #{name},
+            price = #{price},
+            stock = #{stock},
+            description = #{description},
+            main_image = #{mainImage}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        delete from products
+        where id = #{id}
+    </delete>
+
+    <select id="countByCond"
+            parameterType="com.example.shoppingmall.domain.product.dto.ProductSearchCond"
+            resultType="int">
+        select count(*)
+        from products
+        <where>
+            <if test="cond.keyword != null and cond.keyword != ''">
+                and (name like concat('%', #{cond.keyword}, '%'))
+                or description like concat('%', #{cond.keyword}, '%')
+            </if>
+
+            <if test="cond.categoryId != null">
+                and category_id = #{cond.categoryId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByEmail"
+            parameterType="String"
+</mapper>

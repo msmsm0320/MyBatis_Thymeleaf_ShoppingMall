@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<h1>상품 검색</h1>
+<form th:action="@{/}" method="get">
+    <input type="text" name="keyword" placeholder="검색어"
+    th:value="${cond.keyword}">
+
+    <select name="categoryId">
+        <option value="">전체</option>
+        <option value="1" th:selected="${cond.categoryId == 1}">상의</option>
+        <option value="2" th:selected="${cond.categoryId == 2}">하의</option>
+        <option value="3" th:selected="${cond.categoryId == 3}">신발</option>
+    </select>
+
+    <select name="sort">
+        <option value="" th:selected="${cond.sort == null or cond.sort == ''}">최신순</option>
+        <option value="priceAsc" th:selected="${cond.sort == 'priceAsc'}">낮은 가격순</option>
+        <option value="priceDesc" th:selected="${cond.sort == 'priceDesc'}">높은 가격순</option>
+    </select>
+
+    <button type="submit">검색</button>
+</form>
+
+<hr/>
+<ul>
+    <li th:each="product : ${products}">
+        <div th:if="${product.mainImage != null}">
+            <img th:src="@{'/uploads/' + ${product.mainImage}}" alt="이미지" style="width:80px; height:auto;">
+        </div>
+        <span th:text="${product.id}"></span>
+        <strong th:text="${product.name}"></strong>
+        (<span th:text="${product.price}"></span>원 / 재고 <span th:text="${product.stock}"></span>)
+        <a th:href="@{'/admin/products/' + ${product.id} + '/edit'}">수정</a>
+        <form th:action="@{'/admin/products/' + ${product.id} + '/delete'}" method="post" style="display:inline;">
+            <button type="submit">삭제</button>
+        </form>
+    </li>
+
+</ul>
+
+<div>
+    <a th:if="${page > 1}"
+       th:href="@{/(page=${page - 1}, size=${size}, keyword=${cond.keyword}, categoryId=${cond.categoryId}, sort=${cond.sort})}">이전</a>
+
+    <span th:each="p : ${#numbers.sequence(1, totalPages)}">
+        <a th:if="${p != page}"
+           th:href="@{/(page=${p}, size=${size}, keyword=${cond.keyword}, categoryId=${cond.categoryId}, sort=${cond.sort})}"
+           th:text="${p}">1</a>
+        <span th:if="${p == page}" th:text="${p}" style="font-weight: bold;"></span>
+    </span>
+
+    <a th:if="${page < totalPages}"
+       th:href="@{/(page=${page + 1}, size=${size}, keyword=${cond.keyword}, categoryId=${cond.categoryId}, sort=${cond.sort})}">다음</a>
+</div>
+
+<a th:href="@{/admin/products/new}">상품 등록하기</a>
+</body>
+</html>

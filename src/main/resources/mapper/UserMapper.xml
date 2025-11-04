@@ -1,0 +1,69 @@
+<mapper>
+    <resultMap id="UserMap" type="com.example.shoppingmall.domain.user.User">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="enabled" column="enabled"/>
+    </resultMap>
+
+    <select id="findByEmail" resultMap="UserMap">
+        select id,email,password,nickname,enabled from users where email = #{email}
+    </select>
+
+    <select id="findRoleNamesByUserId" resultType="string">
+        select
+            r.name
+        from
+            roles as r join user_roles as ur
+            on r.id = ur.role_id
+        where
+            ur.user_id = #{userId}
+        order by
+            r.id asc
+    </select>
+
+    <select id="existsByEmail" resultMap="int">
+        select
+            count(1)
+        from
+            users
+        where
+            email = #{email}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyproperty="id">
+        insert into
+            users (email, password, nickname, enabled)
+        values
+            (#{email}, #{password}, #{nickname}, #{enabled})
+    </insert>
+
+    <insert id="insertUserRole" resultType="int">
+        insert into
+            user_roles(user_id, role_id)
+        select
+            #{id}, r.id
+        from
+            roles r
+        where
+            r.name = #{role}
+    </insert>
+
+    <select id="findRefreshVersion" resultType="long">
+        select
+            version
+        from
+            refresh_token_version
+        where
+            user_id = #{userId}
+    </select>
+
+    <insert id="upsertRefreshVersion" resultType="int">
+        insert into
+            refresh_token_version(user_id, version)
+        values
+            (#{userId}, #{version})
+        on duplicate key update version = value(version)
+    </insert>
+</mapper>
