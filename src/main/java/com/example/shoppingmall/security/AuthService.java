@@ -1,4 +1,4 @@
-package com.example.shoppingmall.sercurity;
+package com.example.shoppingmall.security;
 
 import com.example.shoppingmall.domain.user.User;
 import com.example.shoppingmall.mapper.UserMapper;
@@ -40,6 +40,7 @@ public class AuthService {
     /*
      * userId를 통해 해당 user가 가지고 있는 refreshToken의 Version을 검색
      */
+    @Transactional
     public long currentRefreshVersion(Long userId){
         Long v = userMapper.findRefreshVersion(userId);
         return (v == null)? 0L : v;
@@ -48,6 +49,7 @@ public class AuthService {
     /*
      * userId를 통해 해당 user가 가지고 있는 refreshToken의 Version을 검색하여 +1(버전 증가)
      */
+    @Transactional
     public long bumpRefreshVersion(Long userId){
         long rv = currentRefreshVersion(userId);
         userMapper.upsertRefreshVersion(userId, rv + 1);

@@ -1,4 +1,4 @@
-package com.example.shoppingmall.sercurity;
+package com.example.shoppingmall.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,8 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +25,7 @@ public class securityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "login", "/signup",
                                 "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ROLE_ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())

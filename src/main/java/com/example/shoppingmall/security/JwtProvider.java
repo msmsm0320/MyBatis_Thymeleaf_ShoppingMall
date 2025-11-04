@@ -1,4 +1,4 @@
-package com.example.shoppingmall.sercurity;
+package com.example.shoppingmall.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

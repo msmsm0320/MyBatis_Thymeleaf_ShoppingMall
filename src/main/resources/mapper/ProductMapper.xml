@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/schema/mybatis-3-mapper.dtd">
-<!-- (0) namespace는 자바 인터페이스인 ProductMapper와 연결시키는 키 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.shoppingmall.mapper.ProductMapper">
 
     <!-- (1) 자바의 Product 객체와 DB 칼럼을 연결
@@ -97,6 +97,4 @@
         </where>
     </select>
 
-    <select id="findByEmail"
-            parameterType="String"
 </mapper>

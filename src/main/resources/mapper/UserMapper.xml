@@ -1,4 +1,11 @@
-<mapper>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- UserMapper XML -->
+<mapper namespace="com.example.shoppingmall.mapper.UserMapper">
+
     <resultMap id="UserMap" type="com.example.shoppingmall.domain.user.User">
         <id property="id" column="id"/>
         <result property="email" column="email"/>
@@ -7,63 +14,49 @@
         <result property="enabled" column="enabled"/>
     </resultMap>
 
-    <select id="findByEmail" resultMap="UserMap">
-        select id,email,password,nickname,enabled from users where email = #{email}
+    <select id="findByEmail" parameterType="string" resultMap="UserMap">
+        SELECT id, email, password, nickname, enabled
+        FROM users
+        WHERE email = #{email}
     </select>
 
-    <select id="findRoleNamesByUserId" resultType="string">
-        select
-            r.name
-        from
-            roles as r join user_roles as ur
-            on r.id = ur.role_id
-        where
-            ur.user_id = #{userId}
-        order by
-            r.id asc
+    <select id="findRoleNamesByUserId" parameterType="long" resultType="string">
+        SELECT r.name
+        FROM roles r
+        JOIN user_roles ur ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
+        ORDER BY r.id ASC
     </select>
 
-    <select id="existsByEmail" resultMap="int">
-        select
-            count(1)
-        from
-            users
-        where
-            email = #{email}
+    <select id="existsByEmail" parameterType="string" resultType="int">
+        SELECT COUNT(1)
+        FROM users
+        WHERE email = #{email}
     </select>
 
-    <insert id="insertUser" useGeneratedKeys="true" keyproperty="id">
-        insert into
-            users (email, password, nickname, enabled)
-        values
-            (#{email}, #{password}, #{nickname}, #{enabled})
+    <insert id="insertUser" parameterType="com.example.shoppingmall.domain.user.User"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (email, password, nickname, enabled)
+        VALUES (#{email}, #{password}, #{nickname}, #{enabled})
     </insert>
 
-    <insert id="insertUserRole" resultType="int">
-        insert into
-            user_roles(user_id, role_id)
-        select
-            #{id}, r.id
-        from
-            roles r
-        where
-            r.name = #{role}
+    <insert id="insertUserRole">
+        INSERT INTO user_roles (user_id, role_id)
+        SELECT #{id}, r.id
+        FROM roles r
+        WHERE r.name = #{role}
     </insert>
 
-    <select id="findRefreshVersion" resultType="long">
-        select
-            version
-        from
-            refresh_token_version
-        where
-            user_id = #{userId}
+    <select id="findRefreshVersion" parameterType="long" resultType="long">
+        SELECT version
+        FROM refresh_token_versions
+        WHERE user_id = #{userId}
     </select>
 
-    <insert id="upsertRefreshVersion" resultType="int">
-        insert into
-            refresh_token_version(user_id, version)
-        values
-            (#{userId}, #{version})
-        on duplicate key update version = value(version)
+    <insert id="upsertRefreshVersion">
+        INSERT INTO refresh_token_versions (user_id, version)
+        VALUES (#{userId}, #{version})
+        ON DUPLICATE KEY UPDATE version = #{version}
     </insert>
+
 </mapper>

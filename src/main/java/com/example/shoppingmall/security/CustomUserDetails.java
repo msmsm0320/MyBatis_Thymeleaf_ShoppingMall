@@ -1,4 +1,4 @@
-package com.example.shoppingmall.sercurity;
+package com.example.shoppingmall.security;
 
 import com.example.shoppingmall.domain.user.User;
 import lombok.RequiredArgsConstructor;
