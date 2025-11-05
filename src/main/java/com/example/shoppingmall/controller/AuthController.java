@@ -6,12 +6,15 @@ import com.example.shoppingmall.security.CookieUtil;
 import com.example.shoppingmall.security.JwtProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
@@ -20,11 +23,17 @@ public class AuthController {
     private final JwtProvider jwtProvider;
     private final CookieUtil cookieUtil;
 
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+
     @PostMapping("/login")
     public String login(@RequestParam String email,
                         @RequestParam String password,
                         HttpServletResponse response) {
         User user = authService.authenticate(email, password);
+        log.info("user_email = ${}", user.getEmail());
         List<String> roles = authService.roles(user.getId());
         long rv = authService.bumpRefreshVersion(user.getId());
 
@@ -36,4 +45,20 @@ public class AuthController {
 
         return "redirect:/";
     }
+
+    @GetMapping("/signup")
+    public String signup(){
+        return "signup";
+    }
+
+    @PostMapping("/signup")
+    public String singup(@RequestParam String email,
+                         @RequestParam String password,
+                         @RequestParam String nickname){
+
+        authService.signup(email, password, nickname);
+        return "redirect:/login";
+    }
 }
+
+

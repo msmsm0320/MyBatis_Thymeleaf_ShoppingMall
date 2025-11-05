@@ -24,6 +24,7 @@ public class HomeController {
             Model model
     ){
 
+
         System.out.println("cond.getKeyword() = " + cond.getKeyword());
         int offset = (page - 1) * size;
 

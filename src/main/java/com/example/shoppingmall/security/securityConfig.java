@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,8 +23,9 @@ public class securityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "login", "/signup",
+                        .requestMatchers("/login", "/signup",
                                 "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -35,6 +37,11 @@ public class securityConfig {
                         .invalidateHttpSession(true) // 로그아웃시 사용자 세션을 삭제하여, 로그아웃 후에도 남아있는 세션 정보 모두 삭제
                         .deleteCookies("ACCESS","REFRESH") // 로그아웃시 ACCESS, REFRESH 해당하는 쿠키 삭제
                 )
+                .exceptionHandling(ex->ex
+                        .authenticationEntryPoint((req,res,e) -> res.sendRedirect("/login"))
+                        .accessDeniedHandler((req,res,e) -> res.sendError(401))
+                )
+
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
